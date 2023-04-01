@@ -23,7 +23,7 @@ class LinearClassifier(object):
 
         self.weights = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        self.weights = torch.normal(mean = 0, std = weight_std, size =(self.n_features, self.n_classes))
         # ========================
 
     def predict(self, x: Tensor):
@@ -45,7 +45,8 @@ class LinearClassifier(object):
 
         y_pred, class_scores = None, None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        class_scores = torch.mm(x, self.weights)
+        y_pred = torch.argmax(class_scores, dim=1)
         # ========================
 
         return y_pred, class_scores
@@ -66,7 +67,11 @@ class LinearClassifier(object):
 
         acc = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        # Calculate the number of correct predictions
+        correct = (y == y_pred).sum().item()
+
+        # Divide the number of correct predictions by the total number of predictions
+        acc = correct / y.shape[0]
         # ========================
 
         return acc * 100

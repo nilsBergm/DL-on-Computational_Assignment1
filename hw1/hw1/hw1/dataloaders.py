@@ -1,5 +1,5 @@
 import math
-import random
+
 
 import numpy as np
 import torch
@@ -68,7 +68,7 @@ def create_train_validation_loaders(
     # ====== YOUR CODE: ======
     num_samples = len(dataset)
     indices = list(range(num_samples))
-    random.shuffle(indices)
+    np.random.shuffle(indices)
     #torch.randperm(indices)
     #torch.rand.shuffle(indices)
     split = int(num_samples * validation_ratio)
