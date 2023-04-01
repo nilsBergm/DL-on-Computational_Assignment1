@@ -68,7 +68,14 @@ An equation: $e^{i\pi} -1 = 0$
 # Part 2 answers
 
 part2_q1 = r"""
-**Your answer:**
+**Your answer:
+In general, increasing the value of k tends to improve the generalization of the kNN classifier for unseen data up to a certain point, beyond which the performance may start to degrade. This is because a larger value of k considers more neighbors, resulting in a smoother decision boundary and less sensitivity to noise and outliers.
+On the other hand, a smaller value of k may overfit to the training set and have higher variance.
+However, the optimal value of k depends on the specific problem and the characteristics of the data set. Increasing k too much can lead to underfitting and a loss of discrimination power, as the decision boundary may become too simple and fail to capture the underlying patterns in the data. 
+Additionally, increasing k also leads to an increase in computational complexity and memory usage, which can become a bottleneck for large data sets.
+For extreme values of k, such as k=1 or k=N (the total number of training examples), the performance of the kNN classifier can be problematic. 
+When k=1, the decision boundary can become too complex and sensitive to noise, resulting in overfitting to the training data. When k=N, every test point will be classified with the most frequent class in the training data, resulting in a high bias and low variance but potentially poor performance on unseen data.
+Therefore, it is important to choose an appropriate value of k based on the trade-off between bias and variance, as well as the computational constraints of the problem.**
 
 
 Write your answer using **markdown** and $\LaTeX$:
@@ -81,7 +88,15 @@ An equation: $e^{i\pi} -1 = 0$
 """
 
 part2_q2 = r"""
-**Your answer:**
+**Your answer:
+Using k-fold CV is better than the two methods mentioned because it provides a more reliable estimate of the model's performance on unseen data.
+When selecting the best model based on train-set accuracy, there is a risk of overfitting, where the model may fit the noise in the data and perform poorly on unseen data. 
+This is because the model is optimized based on the same data it was trained on.
+Similarly, selecting the best model based on test-set accuracy may also lead to overfitting, especially when the test set is small. 
+It is possible to try out different models on the test set until one gets the best performance, but this can lead to a biased estimate of the model's performance on unseen data.
+In contrast, k-fold CV ensures that the model is evaluated on all parts of the dataset, and the average performance across all folds is a more reliable estimate of the model's generalization performance. 
+It also reduces the risk of overfitting by training the model on a subset of the data and evaluating it on another subset.
+Therefore, k-fold CV is a preferred method for model selection and hyperparameter tuning as it provides a more reliable estimate of the model's performance on unseen data.**
 
 
 Write your answer using **markdown** and $\LaTeX$:

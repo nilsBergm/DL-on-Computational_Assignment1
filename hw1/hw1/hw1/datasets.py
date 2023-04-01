@@ -22,7 +22,7 @@ def random_labelled_image(
     # TODO:
     #  Implement according to the docstring description.
     # ====== YOUR CODE: ======
-    image = (high-low)*torch.random(shape) + low
+    image = (high-low)*torch.rand(shape) + low
     image.type(dtype)
     label = random.randint(0,num_classes-1)
     # ========================
@@ -86,10 +86,17 @@ class RandomImageDataset(Dataset):
         #  the random state outside this method.
         #  Raise a ValueError if the index is out of range.
         # ====== YOUR CODE: ======
-        if(index<self.num_samples):
-            torch_temporary_seed(int) #TODO!!!
-            return random_labelled_image(shape = self.image_dim,num_classes=self.num_classes)
-        else: raise ValueError()
+        #if index >= self.num_samples or index < 0:
+         #   raise ValueError(f"Index out of range: {index}")
+        #with torch_temporary_seed(index):
+          #  return random_labelled_image(shape = self.image_dim,num_classes=self.num_classes)
+        if (index < self.num_samples):
+            with torch_temporary_seed(index):
+                image, label = random_labelled_image(shape=self.image_dim, num_classes=self.num_classes)
+            return image, label
+        else:
+            raise ValueError()
+
         # ========================
 
     def __len__(self):
@@ -97,7 +104,7 @@ class RandomImageDataset(Dataset):
         :return: Number of samples in this dataset.
         """
         # ====== YOUR CODE: ======
-        return self.numsamples
+        return self.num_samples
         # ========================
 
 
@@ -126,7 +133,9 @@ class ImageStreamDataset(IterableDataset):
         #  Yield tuples to produce an iterator over random images and labels.
         #  The iterator should produce an infinite stream of data.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        while True:
+            with torch_temporary_seed(torch.randint(0, 2 ** 32 - 1, (1,)).item()):
+                yield random_labelled_image(shape=self.image_dim, num_classes=self.num_classes)
         # ========================
 
 
@@ -154,10 +163,9 @@ class SubsetDataset(Dataset):
         #  Return the item at index + offset from the source dataset.
         #  Raise an IndexError if index is out of bounds.
         # ====== YOUR CODE: ======
-        if(index + self.offset >= len(self.source_dataset)):
-            return self.source_dataset[index + self.offset]
-        else:
+        if index >= len(self):
             raise IndexError()
+        return self.source_dataset[index + self.offset]
         # ========================
 
     def __len__(self):
