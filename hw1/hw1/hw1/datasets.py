@@ -24,7 +24,7 @@ def random_labelled_image(
     # ====== YOUR CODE: ======
     image = (high-low)*torch.rand(shape) + low
     image.type(dtype)
-    label = random.randint(0,num_classes-1)
+    label = torch.randint(num_classes-1,size=(1,)).item()
     # ========================
     return image, label
 
