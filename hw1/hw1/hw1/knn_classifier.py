@@ -156,7 +156,8 @@ def find_best_k(ds_train: Dataset, k_choices, num_folds):
         #  random split each iteration), or implement something else.
 
         # ====== YOUR CODE: ======
-        for z in num_folds:
+        acc = 0
+        for z in range(0,num_folds):
             dl_train, dl_val = dataloaders.create_train_validation_loaders(ds_train,1/num_folds)
             model.train(dl_train=dl_train)
             predict= model.predict(x_test=dl_val)
