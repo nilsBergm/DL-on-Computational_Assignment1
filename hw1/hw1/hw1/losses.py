@@ -52,12 +52,21 @@ class SVMHingeLoss(ClassifierLoss):
 
         loss = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        help0 = x_scores.gather(1, y.view(-1, 1))
+        help1 = help0.expand(-1, x_scores.size(1))
+        margins = x_scores - help1 + self.delta
+        margins[margins<0] = 0
+
+        mask = torch.ones_like(margins)
+        mask.scatter_(1, y.view(-1, 1), 0)  # zero out the correct class
+        losses = mask * margins
+        losses = losses.sum(dim=1)
+        loss = losses.mean()
         # ========================
 
         # TODO: Save what you need for gradient calculation in self.grad_ctx
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        #raise NotImplementedError()
         # ========================
 
         return loss
