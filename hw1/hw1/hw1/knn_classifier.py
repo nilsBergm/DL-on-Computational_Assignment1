@@ -31,16 +31,18 @@ class KNNClassifier(object):
         #     y_train.
         #  2. Save the number of classes as n_classes.
         # ====== YOUR CODE: ======
-        x_train = []
-        y_train = []
-        n_classes = 0
-        for x, y in dl_train:
-            x_train.append(x)
-            y_train.append(y)
+        #x_train = []
+        #y_train = []
+        #n_classes = 0
+        #for x, y in dl_train:
+          #  x_train.append(x)
+       #     y_train.append(y)
+        #unique_labels = torch.unique(y_train)
+        x_train, y_train = next(iter(dl_train))
         unique_labels = torch.unique(y_train)
         n_classes = unique_labels.numel()
-        x_train = torch.cat(x_train, dim=0)
-        y_train = torch.cat(y_train, dim=0)
+        #x_train = torch.cat(x_train, dim=0)
+        #y_train = torch.cat(y_train, dim=0)
         # ========================
 
         self.x_train = x_train
@@ -73,9 +75,10 @@ class KNNClassifier(object):
             #  - Don't use an explicit loop.
             # ====== YOUR CODE: ======
             values = dist_matrix[:,i]
-            idx = np.argpartition(values, self.k)
+            values = values.numpy()
+            idx = np.argsort(values)[:self.k]
             possible_labels=self.y_train[idx]
-            label = max(set(possible_labels), key=possible_labels.count)
+            label = max(set(possible_labels), key=possible_labels.tolist().count)
             y_pred[i]= label
             # ========================
 
@@ -125,7 +128,9 @@ def accuracy(y: Tensor, y_pred: Tensor):
     # TODO: Calculate prediction accuracy. Don't use an explicit loop.
     accuracy = None
     # ====== YOUR CODE: ======
-    accuracy = (y == y_pred).float().mean()
+    num_correct = (y == y_pred).sum().item()
+    num_total = y.shape[0]
+    accuracy = num_correct / num_total
     # ========================
 
     return accuracy
@@ -156,13 +161,14 @@ def find_best_k(ds_train: Dataset, k_choices, num_folds):
         #  random split each iteration), or implement something else.
 
         # ====== YOUR CODE: ======
-        acc = 0
+        accuracies.append([])
         for z in range(0,num_folds):
             dl_train, dl_val = dataloaders.create_train_validation_loaders(ds_train,1/num_folds)
             model.train(dl_train=dl_train)
-            predict= model.predict(x_test=dl_val)
-            acc += accuracy(dl_val,predict)
-        accuracies[i] = acc/num_folds
+            x_val, y_val = next(iter(dl_val))
+            predict= model.predict(x_test=x_val)
+            acc= accuracy(y_val,predict)
+            accuracies[i].append(acc)
         # ========================
 
     best_k_idx = np.argmax([np.mean(acc) for acc in accuracies])
