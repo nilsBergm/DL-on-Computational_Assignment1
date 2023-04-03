@@ -32,8 +32,10 @@ class LinearRegressor(BaseEstimator, RegressorMixin):
 
         y_pred = None
         # ====== YOUR CODE: ======
-        X_b = np.c_[np.ones((X.shape[0], 1)), X]
-        y_pred = X_b.dot(self.w)
+        # X_b = np.c_[np.ones((X.shape[0], 1)), X]
+        # y_pred = X_b.dot(self.w)
+
+        y_pred = X.dot(self.w)
         # ========================
 
         return y_pred
@@ -53,11 +55,15 @@ class LinearRegressor(BaseEstimator, RegressorMixin):
         w_opt = None
         # ====== YOUR CODE: ======
         # X_b = np.c_[np.ones((X.shape[0], 1)), X]  # add bias term
-        bias_tf = BiasTrickTransformer()
-        X_b = bias_tf.fit_transform(X)
-        reg_term = self.reg_lambda * np.eye(X_b.shape[1])
+        # bias_tf = BiasTrickTransformer()
+        # X_b = bias_tf.fit_transform(X)
+        # reg_term = self.reg_lambda * np.eye(X_b.shape[1])
+        # reg_term[0, 0] = 0  # don't regularize bias term
+        # self.w = np.linalg.inv(X_b.T.dot(X_b) + reg_term).dot(X_b.T).dot(y)
+
+        reg_term = self.reg_lambda * np.eye(X.shape[1])
         reg_term[0, 0] = 0  # don't regularize bias term
-        self.w = np.linalg.inv(X_b.T.dot(X_b) + reg_term).dot(X_b.T).dot(y)
+        self.w = np.linalg.inv(X.T.dot(X) - reg_term).dot(X.T).dot(y)
         # ========================
 
         self.weights_ = w_opt
@@ -66,7 +72,6 @@ class LinearRegressor(BaseEstimator, RegressorMixin):
     def fit_predict(self, X, y):
         return self.fit(X, y).predict(X)
 
-from sklearn.model_selection import train_test_split
 
 def fit_predict_dataframe(
     model, df: DataFrame, target_name: str, feature_names: List[str] = None,
@@ -84,18 +89,9 @@ def fit_predict_dataframe(
     """
     # # TODO: Implement according to the docstring description.
     # # ====== YOUR CODE: ======
-    # if feature_names is None:
-    #     df = df.drop(target_name, axis=1)
-    # else:
-    #     df = df[feature_names]
-    # y = df[target_name]
-    # y_pred = model.fit(df,y).predict(df)
-    # # ========================
-    # return y_pred
     X = df.drop(target_name, axis=1) if feature_names is None else df[feature_names]
     y = df[target_name]
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    y_pred = model.fit(X_train, y_train).predict(X_test)
+    y_pred = model.fit(X,y).predict(X)
     # ========================
     return y_pred
 
@@ -182,8 +178,15 @@ def top_correlated_features(df: DataFrame, target_feature, n=5):
     # TODO: Calculate correlations with target and sort features by it
 
     # ====== YOUR CODE: ======
-    correlations = df.corrwith(df[target_feature], method='pearson').sort_values(ascending=False).head(n)
+    correlations = df.corrwith(df[target_feature], method='pearson')
+    correlations = correlations.drop(target_feature, axis=0)
+    correlations = correlations.sort_values(ascending=False).head(n)
     top_n_features, top_n_corr =correlations.index, correlations.values
+
+    # correlations = df.corr(method='pearson')[target_feature]
+    # correlations = correlations.drop(target_feature, axis=0)
+    # correlations = correlations.sort_values(ascending=False).head(n)
+    # top_n_features, top_n_corr =correlations.index, correlations.values
     # ========================
 
     return top_n_features, top_n_corr
@@ -199,7 +202,9 @@ def mse_score(y: np.ndarray, y_pred: np.ndarray):
 
     # TODO: Implement MSE using numpy.
     # ====== YOUR CODE: ======
-    mse = np.mean(np.square(y-y_pred))
+    assert y.shape == y_pred.shape
+    # mse = (1/y.shape[0])*(y-y_pred).T.dot(y-y_pred)
+    mse = np.mean((y-y_pred)**2)
     # ========================
     return mse
 
@@ -214,15 +219,14 @@ def r2_score(y: np.ndarray, y_pred: np.ndarray):
 
     # TODO: Implement R^2 using numpy.
     # ====== YOUR CODE: ======
-    n = y.shape[0]
-    rss = n*mse_score(y,y_pred)
-    y_mean = np.mean(y)
-    tss = np.sum(np.square(y-y_mean))
-    r2 = 1 - (rss/tss)
+    assert y.shape == y_pred.shape
+    ss_residual = np.sum((y-y_pred)**2)
+    ss_total = np.sum((y-np.mean(y))**2)
+    r2 = 1 - (ss_residual/ss_total)
     # ========================
     return r2
 
-
+from sklearn.linear_model import Ridge
 def cv_best_hyperparams(
     model: BaseEstimator, X, y, k_folds, degree_range, lambda_range
 ):
@@ -255,7 +259,7 @@ def cv_best_hyperparams(
         'polynomialfeatures__degree': degree_range,
         'ridge__alpha': lambda_range
     }
-    model = sklearn.pipeline.make_pipeline(PolynomialFeatures(), sklearn.linear_model.Ridge())
+    model = sklearn.pipeline.make_pipeline(PolynomialFeatures(), Ridge())
     grid_search = sklearn.model_selection.GridSearchCV(model, param_grid, cv=k_folds, scoring='neg_mean_squared_error')
     grid_search.fit(X, y)
     best_params = grid_search.best_params_
