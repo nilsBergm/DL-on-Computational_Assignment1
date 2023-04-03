@@ -107,7 +107,26 @@ class LinearClassifier(object):
             #     using the weight_decay parameter.
 
             # ====== YOUR CODE: ======
-            raise NotImplementedError()
+            train_acc = 0
+            train_loss = 0
+            for x_train,y_train in dl_train:
+                y_predict ,class_scores = self.predict(x_train)
+                train_loss += loss_fn.loss(x_train, y_train, class_scores, y_predict)+ weight_decay
+                self.weights = self.weights - learn_rate * (loss_fn.grad())
+                train_acc += self.evaluate_accuracy(y_train,y_predict)
+            train_res.accuracy.append(train_acc)
+            train_res.loss.append(train_loss)
+
+            val_acc = 0
+            val_loss = 0
+            for x_val, y_val in dl_valid:
+                y_predict, class_scores = self.predict(x_val)
+                val_loss += loss_fn.loss(x_val, y_val, class_scores, y_predict) + weight_decay
+                val_acc += self.evaluate_accuracy(y_val, y_predict)
+            valid_res.accuracy.append(val_acc)
+            valid_res.loss.append(val_loss)
+
+
             # ========================
             print(".", end="")
 
@@ -128,7 +147,14 @@ class LinearClassifier(object):
         #  The output shape should be (n_classes, C, H, W).
 
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        weights = 0
+        if has_bias:
+            weights = self.weights[1:,:]
+        else:
+            weights = self.weights
+
+        weights = weights.T
+        w_images = weights.view(self.n_classes, img_shape[0], img_shape[1], img_shape[2])
         # ========================
 
         return w_images
@@ -141,7 +167,7 @@ def hyperparams():
     #  Manually tune the hyperparameters to get the training accuracy test
     #  to pass.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    hp = dict(weight_std=0.001, learn_rate=0.1, weight_decay=0.001)
     # ========================
 
     return hp
