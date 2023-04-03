@@ -66,7 +66,7 @@ class SVMHingeLoss(ClassifierLoss):
 
         # TODO: Save what you need for gradient calculation in self.grad_ctx
         # ====== YOUR CODE: ======
-        #raise NotImplementedError()
+        self.grad_ctx = {"margins": margins, "mask": mask,"x": x, "x_scores": x_scores, "y": y}
         # ========================
 
         return loss
@@ -84,7 +84,31 @@ class SVMHingeLoss(ClassifierLoss):
 
         grad = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        margins = self.grad_ctx["margins"]
+        mask = self.grad_ctx["mask"]
+        x = self.grad_ctx["x"]
+        x_scores = self.grad_ctx["x_scores"]
+        y = self.grad_ctx["y"]
+
+        #grad = torch.zeros_like(x_scores)
+        #margin_mask = margins > 0
+        #grad[margin_mask] = 1  * x_scores[margins > 0]
+        #grad[torch.arange(grad.shape[0]), y.float()] = -margin_mask.sum(dim=1)
+        #grad = x.transpose(0, 1) @ grad
+        grad = torch.zeros_like(x_scores)
+        margin_mask = (margins > 0).float()
+        margin_mask[mask == 0] = 0
+        margin_mask[torch.arange(grad.shape[0]), y] = -margin_mask.sum(dim=1)
+        grad = x.t() @ margin_mask
+
+        #grad = torch.zeros_like(margins)
+        #grad[margins > 0] = 1 * x_scores[margins > 0]
+        #grad[margins <= 0] = 0
+        #grad[mask == 0] = -torch.sum(grad, dim=1)
+        #grad = x.transpose(0, 1) @ grad
+
+        # Scale the gradient by the number of samples
+        grad /= x.shape[0]
         # ========================
 
         return grad
