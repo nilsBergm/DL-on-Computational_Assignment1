@@ -32,7 +32,8 @@ class LinearRegressor(BaseEstimator, RegressorMixin):
 
         y_pred = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        X_b = np.c_[np.ones((X.shape[0], 1)), X]
+        y_pred = X_b.dot(self.w)
         # ========================
 
         return y_pred
@@ -51,7 +52,12 @@ class LinearRegressor(BaseEstimator, RegressorMixin):
 
         w_opt = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        # X_b = np.c_[np.ones((X.shape[0], 1)), X]  # add bias term
+        bias_tf = BiasTrickTransformer()
+        X_b = bias_tf.fit_transform(X)
+        reg_term = self.reg_lambda * np.eye(X_b.shape[1])
+        reg_term[0, 0] = 0  # don't regularize bias term
+        self.w = np.linalg.inv(X_b.T.dot(X_b) + reg_term).dot(X_b.T).dot(y)
         # ========================
 
         self.weights_ = w_opt
@@ -60,6 +66,7 @@ class LinearRegressor(BaseEstimator, RegressorMixin):
     def fit_predict(self, X, y):
         return self.fit(X, y).predict(X)
 
+from sklearn.model_selection import train_test_split
 
 def fit_predict_dataframe(
     model, df: DataFrame, target_name: str, feature_names: List[str] = None,
@@ -75,9 +82,20 @@ def fit_predict_dataframe(
         features are used.
     :return: A vector of predictions, y_pred.
     """
-    # TODO: Implement according to the docstring description.
-    # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    # # TODO: Implement according to the docstring description.
+    # # ====== YOUR CODE: ======
+    # if feature_names is None:
+    #     df = df.drop(target_name, axis=1)
+    # else:
+    #     df = df[feature_names]
+    # y = df[target_name]
+    # y_pred = model.fit(df,y).predict(df)
+    # # ========================
+    # return y_pred
+    X = df.drop(target_name, axis=1) if feature_names is None else df[feature_names]
+    y = df[target_name]
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    y_pred = model.fit(X_train, y_train).predict(X_test)
     # ========================
     return y_pred
 
@@ -100,7 +118,8 @@ class BiasTrickTransformer(BaseEstimator, TransformerMixin):
 
         xb = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        bias_array = np.ones((X.shape[0],1))
+        xb = np.hstack((bias_array,X))
         # ========================
 
         return xb
@@ -163,7 +182,8 @@ def top_correlated_features(df: DataFrame, target_feature, n=5):
     # TODO: Calculate correlations with target and sort features by it
 
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    correlations = df.corrwith(df[target_feature], method='pearson').sort_values(ascending=False).head(n)
+    top_n_features, top_n_corr =correlations.index, correlations.values
     # ========================
 
     return top_n_features, top_n_corr
@@ -179,7 +199,7 @@ def mse_score(y: np.ndarray, y_pred: np.ndarray):
 
     # TODO: Implement MSE using numpy.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    mse = np.mean(np.square(y-y_pred))
     # ========================
     return mse
 
@@ -194,7 +214,11 @@ def r2_score(y: np.ndarray, y_pred: np.ndarray):
 
     # TODO: Implement R^2 using numpy.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    n = y.shape[0]
+    rss = n*mse_score(y,y_pred)
+    y_mean = np.mean(y)
+    tss = np.sum(np.square(y-y_mean))
+    r2 = 1 - (rss/tss)
     # ========================
     return r2
 
@@ -227,7 +251,14 @@ def cv_best_hyperparams(
     #  - You can use MSE or R^2 as a score.
 
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    param_grid = {
+        'polynomialfeatures__degree': degree_range,
+        'ridge__alpha': lambda_range
+    }
+    model = sklearn.pipeline.make_pipeline(PolynomialFeatures(), sklearn.linear_model.Ridge())
+    grid_search = sklearn.model_selection.GridSearchCV(model, param_grid, cv=k_folds, scoring='neg_mean_squared_error')
+    grid_search.fit(X, y)
+    best_params = grid_search.best_params_
     # ========================
 
     return best_params
