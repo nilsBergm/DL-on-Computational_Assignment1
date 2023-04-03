@@ -114,7 +114,12 @@ An equation: $e^{i\pi} -1 = 0$
 # Part 3 answers
 
 part3_q1 = r"""
-**Your answer:**
+**Your answer:
+The selection of Δ>0 is arbitrary for the SVM loss 𝐿(𝑾) as it is defined above because it only affects the specific numerical value of the loss, and not the overall optimization problem.
+This is because the regularization term, which is dependent on the model parameters, dominates the loss function as the value of Δ becomes very large. 
+As a result, the model parameters will be determined primarily by the regularization term and not by the hinge loss term, which means that the value of Δ does not have a significant impact on the final model.
+In other words, the choice of Δ>0 is a hyperparameter that can be tuned to balance the importance of correctly classifying the training data with the desire to maintain a large margin between classes.
+However, as long as Δ is set to a positive value, the optimization problem will have the same solution, which is to minimize the hinge loss while also minimizing the magnitude of the model parameters.**
 
 
 Write your answer using **markdown** and $\LaTeX$:
