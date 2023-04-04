@@ -31,6 +31,12 @@ class KNNClassifier(object):
         #     y_train.
         #  2. Save the number of classes as n_classes.
         # ====== YOUR CODE: ======
+        #n_classes = 0
+        #x_train, y_train = torch.Tensor(), torch.Tensor()
+        #for x, y in dl_train:
+         #   x_train = torch.cat((x_train, x), 0)
+          #  y_train = torch.cat((y_train, y), 0)
+          #  n_classes = max(y.max(), n_classes)
         #x_train = []
         #y_train = []
         #n_classes = 0
@@ -74,6 +80,10 @@ class KNNClassifier(object):
             #  - Set y_pred[i] to the most common class among them
             #  - Don't use an explicit loop.
             # ====== YOUR CODE: ======
+            '''topk_ind = torch.topk(dist_matrix[:, i], self.k, dim=0, largest=False).indices
+            topk = self.y_train[topk_ind]
+            y_pred[i] = torch.mode(topk, 0).values'''
+
             values = dist_matrix[:,i]
             values = values.numpy()
             idx = np.argsort(values)[:self.k]
@@ -131,6 +141,7 @@ def accuracy(y: Tensor, y_pred: Tensor):
     num_correct = (y == y_pred).sum().item()
     num_total = y.shape[0]
     accuracy = num_correct / num_total
+    #accuracy = len(torch.where(y_pred == y)[0]) / len(y)
     # ========================
 
     return accuracy
@@ -161,17 +172,19 @@ def find_best_k(ds_train: Dataset, k_choices, num_folds):
         #  random split each iteration), or implement something else.
 
         # ====== YOUR CODE: ======
-        accuracies.append([])
+        fold_acc = []
         for z in range(0,num_folds):
-            dl_train, dl_val = dataloaders.create_train_validation_loaders(ds_train,1/num_folds)
-            model.train(dl_train=dl_train)
+            dl_train, dl_val = dataloaders.create_train_validation_loaders(ds_train, 1 / num_folds)
+            model.train(dl_train)
             x_val, y_val = next(iter(dl_val))
-            predict= model.predict(x_test=x_val)
-            acc= accuracy(y_val,predict)
-            accuracies[i].append(acc)
+            y_pred = model.predict(x_val)
+            fold_acc.append(accuracy(y_val, y_pred))
+        accuracies.append(fold_acc)
         # ========================
 
     best_k_idx = np.argmax([np.mean(acc) for acc in accuracies])
     best_k = k_choices[best_k_idx]
+
+
 
     return best_k, accuracies

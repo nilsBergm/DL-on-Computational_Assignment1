@@ -30,15 +30,6 @@ part1_q1 = r"""
  It's worth noting, however, that the performance of the model on the validation set is still only an estimate of its performance on new and unseen data. 
  Therefore, it's important to keep the test set separate and only use it once, at the end, to obtain an unbiased estimate of the model's generalization error.
  **
-
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
 """
 
 part1_q2 ="""
@@ -53,14 +44,6 @@ Instead, my friend should have used a validation set to select the value of the 
 This can be done by randomly splitting the training set into a training and validation set, and then selecting the value of the regularization parameter that produces the best performance on the validation set. 
 Once the regularization parameter has been selected, the model should be trained on the entire training set (without using the validation set) and evaluated on the test set to obtain an unbiased estimate of its performance on new and unseen data.
 **
-
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
 
 """
 
@@ -77,14 +60,6 @@ For extreme values of k, such as k=1 or k=N (the total number of training exampl
 When k=1, the decision boundary can become too complex and sensitive to noise, resulting in overfitting to the training data. When k=N, every test point will be classified with the most frequent class in the training data, resulting in a high bias and low variance but potentially poor performance on unseen data.
 Therefore, it is important to choose an appropriate value of k based on the trade-off between bias and variance, as well as the computational constraints of the problem.**
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
 """
 
 part2_q2 = r"""
@@ -97,15 +72,6 @@ It is possible to try out different models on the test set until one gets the be
 In contrast, k-fold CV ensures that the model is evaluated on all parts of the dataset, and the average performance across all folds is a more reliable estimate of the model's generalization performance. 
 It also reduces the risk of overfitting by training the model on a subset of the data and evaluating it on another subset.
 Therefore, k-fold CV is a preferred method for model selection and hyperparameter tuning as it provides a more reliable estimate of the model's performance on unseen data.**
-
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
 """
 
 # ==============
@@ -121,40 +87,32 @@ As a result, the model parameters will be determined primarily by the regulariza
 In other words, the choice of Δ>0 is a hyperparameter that can be tuned to balance the importance of correctly classifying the training data with the desire to maintain a large margin between classes.
 However, as long as Δ is set to a positive value, the optimization problem will have the same solution, which is to minimize the hinge loss while also minimizing the magnitude of the model parameters.**
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
 """
 
 part3_q2 = r"""
 **Your answer:**
 
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+
 
 """
 
 part3_q3 = r"""
 **Your answer:**
+**Learning rate: I would say it is good, because it is an efficient learning, so the loss reduction is fast.
 
+When the learning rate is too high, the training process is unstable, and the loss may oscillate or diverge. 
+The loss curve will have a jagged or irregular shape, and it may not converge to an optimal solution. The loss may jump around or increase, indicating that the optimizer overshoots the minimum and may not find a good solution. 
+In this case, the model may not learn much from the training data, resulting in poor performance.
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+When the learning rate is too low, the training process is slow, and the loss reduction is gradual. 
+The loss curve will have a gentle slope, and it may take many epochs to converge to an optimal solution. 
+The loss may plateau at a relatively high value, indicating that the optimizer is stuck in a local minimum or saddle point. 
+In this case, the model may not learn much from the training data, resulting in poor performance. **
 
+**Second question: The model is highly overfitted to the training set, since the training accuracy is much higher, than the test accuracy. 
+You can see that the training accuracy is continuously increasing while the test accuracy stagnates and stays at the same level.
+So the model trains only very well on the training set but it doesn´t generalize so the test accuracy doesn´t increase
 """
 
 # ==============
@@ -166,12 +124,6 @@ part4_q1 = r"""
 **Your answer:**
 
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
 
 """
 
@@ -179,12 +131,7 @@ part4_q2 = r"""
 **Your answer:**
 
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+
 
 """
 
@@ -192,12 +139,7 @@ part4_q3 = r"""
 **Your answer:**
 
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+
 
 """
 

@@ -114,6 +114,11 @@ class LinearClassifier(object):
                 train_loss += loss_fn.loss(x_train, y_train, class_scores, y_predict)+ weight_decay
                 self.weights = self.weights - learn_rate * (loss_fn.grad())
                 train_acc += self.evaluate_accuracy(y_train,y_predict)
+
+                #y_predict, class_scores = self.predict(x_train)
+                #train_loss += loss_fn.loss(x_train, y_train, class_scores, y_predict)
+                #self.weights = self.weights - learn_rate * (loss_fn.grad()+ weight_decay*self.weights)
+                #train_acc += self.evaluate_accuracy(y_train, y_predict)
             train_res.accuracy.append(train_acc)
             train_res.loss.append(train_loss)
 
