@@ -9,6 +9,11 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.utils.validation import check_X_y, check_is_fitted
 
 
+from sklearn.linear_model import Ridge
+from sklearn.model_selection import KFold, GridSearchCV
+from sklearn.metrics import make_scorer
+
+
 class LinearRegressor(BaseEstimator, RegressorMixin):
     """
     Implements Linear Regression prediction and closed-form parameter fitting.
@@ -54,16 +59,11 @@ class LinearRegressor(BaseEstimator, RegressorMixin):
 
         w_opt = None
         # ====== YOUR CODE: ======
-        # X_b = np.c_[np.ones((X.shape[0], 1)), X]  # add bias term
-        # bias_tf = BiasTrickTransformer()
-        # X_b = bias_tf.fit_transform(X)
-        # reg_term = self.reg_lambda * np.eye(X_b.shape[1])
-        # reg_term[0, 0] = 0  # don't regularize bias term
-        # self.w = np.linalg.inv(X_b.T.dot(X_b) + reg_term).dot(X_b.T).dot(y)
 
+        n = X.shape[0]
         reg_term = self.reg_lambda * np.eye(X.shape[1])
         reg_term[0, 0] = 0  # don't regularize bias term
-        self.w = np.linalg.inv(X.T.dot(X) - reg_term).dot(X.T).dot(y)
+        self.w = np.linalg.inv(X.T.dot(X) + n*reg_term).dot(X.T).dot(y)
         # ========================
 
         self.weights_ = w_opt
@@ -121,6 +121,7 @@ class BiasTrickTransformer(BaseEstimator, TransformerMixin):
         return xb
 
 
+
 class BostonFeaturesTransformer(BaseEstimator, TransformerMixin):
     """
     Generates custom features for the Boston dataset.
@@ -132,7 +133,7 @@ class BostonFeaturesTransformer(BaseEstimator, TransformerMixin):
         # TODO: Your custom initialization, if needed
         # Add any hyperparameters you need and save them as above
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        self.poly = PolynomialFeatures(degree=degree)
         # ========================
 
     def fit(self, X, y=None):
@@ -154,7 +155,10 @@ class BostonFeaturesTransformer(BaseEstimator, TransformerMixin):
 
         X_transformed = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        columns_to_remove = [0, 1, 3, 9, 10, 11] # CRIM, ZN, CHAS, TAX, PTRATIO, B
+        X_transformed = np.delete(X, columns_to_remove, axis=1)
+        poly = self.poly.fit(X_transformed)
+        X_transformed = poly.transform(X_transformed)
         # ========================
 
         return X_transformed
@@ -180,13 +184,8 @@ def top_correlated_features(df: DataFrame, target_feature, n=5):
     # ====== YOUR CODE: ======
     correlations = df.corrwith(df[target_feature], method='pearson')
     correlations = correlations.drop(target_feature, axis=0)
-    correlations = correlations.sort_values(ascending=False).head(n)
+    correlations = correlations.sort_values(ascending=False, key = abs).head(n)
     top_n_features, top_n_corr =correlations.index, correlations.values
-
-    # correlations = df.corr(method='pearson')[target_feature]
-    # correlations = correlations.drop(target_feature, axis=0)
-    # correlations = correlations.sort_values(ascending=False).head(n)
-    # top_n_features, top_n_corr =correlations.index, correlations.values
     # ========================
 
     return top_n_features, top_n_corr
@@ -203,7 +202,6 @@ def mse_score(y: np.ndarray, y_pred: np.ndarray):
     # TODO: Implement MSE using numpy.
     # ====== YOUR CODE: ======
     assert y.shape == y_pred.shape
-    # mse = (1/y.shape[0])*(y-y_pred).T.dot(y-y_pred)
     mse = np.mean((y-y_pred)**2)
     # ========================
     return mse
@@ -226,7 +224,7 @@ def r2_score(y: np.ndarray, y_pred: np.ndarray):
     # ========================
     return r2
 
-from sklearn.linear_model import Ridge
+
 def cv_best_hyperparams(
     model: BaseEstimator, X, y, k_folds, degree_range, lambda_range
 ):
@@ -255,12 +253,16 @@ def cv_best_hyperparams(
     #  - You can use MSE or R^2 as a score.
 
     # ====== YOUR CODE: ======
+    mse_score_ = make_scorer(mse_score, greater_is_better=False)
+    k_folds = KFold(n_splits=k_folds, shuffle=True)
     param_grid = {
-        'polynomialfeatures__degree': degree_range,
-        'ridge__alpha': lambda_range
+        'bostonfeaturestransformer__degree': degree_range,
+        'linearregressor__reg_lambda': lambda_range,
     }
-    model = sklearn.pipeline.make_pipeline(PolynomialFeatures(), Ridge())
-    grid_search = sklearn.model_selection.GridSearchCV(model, param_grid, cv=k_folds, scoring='neg_mean_squared_error')
+    # param_grid = model.get_params()
+    # print(param_grid)
+    # model = sklearn.pipeline.make_pipeline(PolynomialFeatures(), Ridge())
+    grid_search = sklearn.model_selection.GridSearchCV(model, param_grid, cv=k_folds, scoring=mse_score_)
     grid_search.fit(X, y)
     best_params = grid_search.best_params_
     # ========================
