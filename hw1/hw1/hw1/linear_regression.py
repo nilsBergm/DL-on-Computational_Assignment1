@@ -259,9 +259,6 @@ def cv_best_hyperparams(
         'bostonfeaturestransformer__degree': degree_range,
         'linearregressor__reg_lambda': lambda_range,
     }
-    # param_grid = model.get_params()
-    # print(param_grid)
-    # model = sklearn.pipeline.make_pipeline(PolynomialFeatures(), Ridge())
     grid_search = sklearn.model_selection.GridSearchCV(model, param_grid, cv=k_folds, scoring=mse_score_)
     grid_search.fit(X, y)
     best_params = grid_search.best_params_

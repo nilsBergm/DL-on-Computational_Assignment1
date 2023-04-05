@@ -121,14 +121,20 @@ So the model trains only very well on the training set but it doesn´t generaliz
 # Part 4 answers
 
 part4_q1 = r"""
-**Your answer:**
+**The ideal residual plot should be a random scatter of points that form a constant around the y-^y=0 horizontal line.
+The trained model behaves quite well since the residual plots are roughly scattered points around the horizontal $y-\hat{y}=0$ line.
+The plot for the top-5 features displays a dense spot of points between $\hat{y}=10$ and $\hat{y}=20$ but has many outliers in the extreme values of $\hat{y}$. The residual plot after CV shows an improvement in this respect, because it has less outliers. We can also observe that dashed line, which represents the dots' standard deviation, has shrunk closer to the $y-\hat{y}=0$ line.
+In addition to these visible changes, we see that the mean-squared error has diminished ($27.20$ to $12.41$ (train) and $19.51$ (test)) while the $R^2$ score has soared from $0.68$ to $0.86$ (train) and $0.71$ (test).**
 
 
 
 """
 
 part4_q2 = r"""
-**Your answer:**
+**1. Adding non-linear features to the data is like adding a feature to the dataset, it does not change the fact that we can use a linear regression model to predict the data.
+The outcome is still predicted with a linear combination of the parameters.
+2. For this reason, we can use a linear regression model to fit any non-linear function of the original features.
+3. Since we have added features to the data, the decision boundary is now a hyperplane in a higher-dimensional space.**
 
 
 
@@ -136,8 +142,9 @@ part4_q2 = r"""
 """
 
 part4_q3 = r"""
-**Your answer:**
-
+**When doing the gridsearch in the cross-validation code, we want to find the best combination of its hyperparameters in respect to model performance. Choosing a logscale instead of a linear scale enables us to span a broader amount of values for $\lambda$. The logarithmic scale also ensures that the range is not too skewed towards high or low values, as could happen with a linear scale.**
+For each step of the cross-validation, the model was fitted:
+- once have to investigate pipelines
 
 
 
