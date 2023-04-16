@@ -152,8 +152,9 @@ The outcome is still predicted with a linear combination of the parameters.
 part4_q3 = r"""
 **When doing the gridsearch in the cross-validation code, we want to find the best combination of its hyperparameters in respect to model performance. Choosing a logscale instead of a linear scale enables us to span a broader amount of values for $\lambda$. The logarithmic scale also ensures that the range is not too skewed towards high or low values, as could happen with a linear scale.
 
-For each step of the k-folds cross-validation, the model was fitted k times, and here we used k=3.**
-
+For each step of the k-folds cross-validation, the model is fitted once. With fixed parameters (degree and lambda), we could answer that the model has been fitted $k=3$ times to data.
+However, we are doing a gridsearch which performs a cross-validation on every possible combination of the given parameters (here, degree_range and lambda_range). The number of fits is multiplied by these ranges.
+With $3$ values for the degree, $20$ values for lambda and $3$ folds, the model has been fitted $3*20*3=180$ to the data.**
 """
 
 # ==============
