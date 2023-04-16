@@ -90,7 +90,15 @@ However, as long as Δ is set to a positive value, the optimization problem will
 """
 
 part3_q2 = r"""
-**Your answer:**
+1.Using the visualization, one can see that each row (class) of weights learns a representation of the shape of the corresponding label.
+ This representation is learned from the training set and if a number in the test set looks very different from the number in the training set, it can lead to a misclassification.
+In addition, the visualization shows very well that the numbers 0-3 are represented very well by the weights, whereas 6 and 9 in particular are difficult to recognize.
+ This is also reflected in the test results. If a test sample represents a very inaccurate number, it is often wrongly classified as a 6.
+ 
+ 2:The big difference is that in KNN there is no real learning. 
+ There, classification is simply based on the neighbors. 
+ In the linear classifier, the neighboring samples play no role in the classification. There the shapes of the labels are really learned. 
+ Based on this, the classification is done by similarity between the learned weights and the test samples.
 
 
 
@@ -142,11 +150,9 @@ The outcome is still predicted with a linear combination of the parameters.
 """
 
 part4_q3 = r"""
-**When doing the gridsearch in the cross-validation code, we want to find the best combination of its hyperparameters in respect to model performance. Choosing a logscale instead of a linear scale enables us to span a broader amount of values for $\lambda$. The logarithmic scale also ensures that the range is not too skewed towards high or low values, as could happen with a linear scale.**
-For each step of the cross-validation, the model was fitted:
-- once have to investigate pipelines
+**When doing the gridsearch in the cross-validation code, we want to find the best combination of its hyperparameters in respect to model performance. Choosing a logscale instead of a linear scale enables us to span a broader amount of values for $\lambda$. The logarithmic scale also ensures that the range is not too skewed towards high or low values, as could happen with a linear scale.
 
-
+For each step of the k-folds cross-validation, the model was fitted k times, and here we used k=3.**
 
 """
 
